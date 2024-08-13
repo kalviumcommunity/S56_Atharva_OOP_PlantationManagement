@@ -10,23 +10,23 @@ public:
 
     void display() const
     {
-        cout << "Plant: " << name << ", Number of plants: " << numberOfPlants << endl;
+        cout << "Plant: " << this->getName() << ", Number of plants: " << this->getNumberOfPlants() << endl;
     }
 
     void setName(string newName)
     {
-        name = newName;
+        this->name = newName;
     }
 
 protected:
     string getName() const
     {
-        return name;
+        return this->name;
     }
 
     int getNumberOfPlants() const
     {
-        return numberOfPlants;
+        return this->numberOfPlants;
     }
 
 private:
@@ -42,7 +42,7 @@ public:
 
     void display() const
     {
-        cout << "Tree: " << getName() << ", Number of trees: " << getNumberOfPlants() << endl;
+        cout << "Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants() << endl;
     }
 };
 
@@ -54,7 +54,7 @@ public:
 
     void display() const
     {
-        cout << "Flower: " << getName() << ", Number of flowers: " << getNumberOfPlants() << endl;
+        cout << "Flower: " << this->getName() << ", Number of flowers: " << this->getNumberOfPlants() << endl;
     }
 };
 

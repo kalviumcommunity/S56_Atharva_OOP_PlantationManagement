@@ -5,7 +5,7 @@ using namespace std;
 class Plant
 {
 public:
-    Plant(string name, int numberOfPlants)
+    Plant(string name = "", int numberOfPlants = 0)
         : name(name), numberOfPlants(numberOfPlants) {}
 
     void display() const
@@ -16,6 +16,11 @@ public:
     void setName(string newName)
     {
         this->name = newName;
+    }
+
+    void setNumberOfPlants(int numPlants)
+    {
+        this->numberOfPlants = numPlants;
     }
 
 protected:
@@ -37,7 +42,7 @@ private:
 class Tree : public Plant
 {
 public:
-    Tree(string name, int numberOfPlants)
+    Tree(string name = "", int numberOfPlants = 0)
         : Plant(name, numberOfPlants) {}
 
     void display() const
@@ -49,7 +54,7 @@ public:
 class Flower : public Plant
 {
 public:
-    Flower(string name, int numberOfPlants)
+    Flower(string name = "", int numberOfPlants = 0)
         : Plant(name, numberOfPlants) {}
 
     void display() const
@@ -60,11 +65,59 @@ public:
 
 int main()
 {
-    Tree oak("Oak", 10);
-    Flower rose("Rose", 20);
+    int numTrees, numFlowers;
 
-    oak.display();
-    rose.display();
+    cout << "Enter the number of trees: ";
+    cin >> numTrees;
+
+    cout << "Enter the number of flowers: ";
+    cin >> numFlowers;
+
+    Tree *trees = new Tree[numTrees];
+    Flower *flowers = new Flower[numFlowers];
+
+    for (int i = 0; i < numTrees; ++i)
+    {
+        string name;
+        int numberOfPlants;
+
+        cout << "Enter name for tree " << i + 1 << ": ";
+        cin >> name;
+        cout << "Enter number of trees for " << name << ": ";
+        cin >> numberOfPlants;
+
+        trees[i].setName(name);
+        trees[i].setNumberOfPlants(numberOfPlants);
+    }
+
+    for (int i = 0; i < numFlowers; ++i)
+    {
+        string name;
+        int numberOfPlants;
+
+        cout << "Enter name for flower " << i + 1 << ": ";
+        cin >> name;
+        cout << "Enter number of flowers for " << name << ": ";
+        cin >> numberOfPlants;
+
+        flowers[i].setName(name);
+        flowers[i].setNumberOfPlants(numberOfPlants);
+    }
+
+    cout << "\nTrees:\n";
+    for (int i = 0; i < numTrees; ++i)
+    {
+        trees[i].display();
+    }
+
+    cout << "\nFlowers:\n";
+    for (int i = 0; i < numFlowers; ++i)
+    {
+        flowers[i].display();
+    }
+
+    delete[] trees;
+    delete[] flowers;
 
     return 0;
 }

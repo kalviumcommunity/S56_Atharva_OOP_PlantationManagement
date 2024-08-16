@@ -73,11 +73,12 @@ int main()
     cout << "Enter the number of flowers: ";
     cin >> numFlowers;
 
-    Tree *trees = new Tree[numTrees];
-    Flower *flowers = new Flower[numFlowers];
+    Tree **trees = new Tree *[numTrees];
+    Flower **flowers = new Flower *[numFlowers];
 
     for (int i = 0; i < numTrees; ++i)
     {
+        trees[i] = new Tree;
         string name;
         int numberOfPlants;
 
@@ -86,12 +87,13 @@ int main()
         cout << "Enter number of trees for " << name << ": ";
         cin >> numberOfPlants;
 
-        trees[i].setName(name);
-        trees[i].setNumberOfPlants(numberOfPlants);
+        trees[i]->setName(name);
+        trees[i]->setNumberOfPlants(numberOfPlants);
     }
 
     for (int i = 0; i < numFlowers; ++i)
     {
+        flowers[i] = new Flower;
         string name;
         int numberOfPlants;
 
@@ -100,23 +102,32 @@ int main()
         cout << "Enter number of flowers for " << name << ": ";
         cin >> numberOfPlants;
 
-        flowers[i].setName(name);
-        flowers[i].setNumberOfPlants(numberOfPlants);
+        flowers[i]->setName(name);
+        flowers[i]->setNumberOfPlants(numberOfPlants);
     }
 
     cout << "\nTrees:\n";
     for (int i = 0; i < numTrees; ++i)
     {
-        trees[i].display();
+        trees[i]->display();
     }
 
     cout << "\nFlowers:\n";
     for (int i = 0; i < numFlowers; ++i)
     {
-        flowers[i].display();
+        flowers[i]->display();
     }
 
+    for (int i = 0; i < numTrees; ++i)
+    {
+        delete trees[i];
+    }
     delete[] trees;
+
+    for (int i = 0; i < numFlowers; ++i)
+    {
+        delete flowers[i];
+    }
     delete[] flowers;
 
     return 0;

@@ -42,26 +42,50 @@ private:
 class Tree : public Plant
 {
 public:
+    static int totalTrees;
+
     Tree(string name = "", int numberOfPlants = 0)
-        : Plant(name, numberOfPlants) {}
+        : Plant(name, numberOfPlants)
+    {
+        totalTrees++;
+    }
 
     void display() const
     {
         cout << "Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants() << endl;
     }
+
+    static void displayTotalTrees()
+    {
+        cout << "Total number of trees: " << totalTrees << endl;
+    }
 };
+
+int Tree::totalTrees = 0;
 
 class Flower : public Plant
 {
 public:
+    static int totalFlowers;
+
     Flower(string name = "", int numberOfPlants = 0)
-        : Plant(name, numberOfPlants) {}
+        : Plant(name, numberOfPlants)
+    {
+        totalFlowers++;
+    }
 
     void display() const
     {
         cout << "Flower: " << this->getName() << ", Number of flowers: " << this->getNumberOfPlants() << endl;
     }
+
+    static void displayTotalFlowers()
+    {
+        cout << "Total number of flowers: " << totalFlowers << endl;
+    }
 };
+
+int Flower::totalFlowers = 0;
 
 int main()
 {
@@ -73,11 +97,12 @@ int main()
     cout << "Enter the number of flowers: ";
     cin >> numFlowers;
 
-    Tree *trees = new Tree[numTrees];
-    Flower *flowers = new Flower[numFlowers];
+    Tree **trees = new Tree *[numTrees];
+    Flower **flowers = new Flower *[numFlowers];
 
     for (int i = 0; i < numTrees; ++i)
     {
+        trees[i] = new Tree;
         string name;
         int numberOfPlants;
 
@@ -86,12 +111,13 @@ int main()
         cout << "Enter number of trees for " << name << ": ";
         cin >> numberOfPlants;
 
-        trees[i].setName(name);
-        trees[i].setNumberOfPlants(numberOfPlants);
+        trees[i]->setName(name);
+        trees[i]->setNumberOfPlants(numberOfPlants);
     }
 
     for (int i = 0; i < numFlowers; ++i)
     {
+        flowers[i] = new Flower;
         string name;
         int numberOfPlants;
 
@@ -100,23 +126,36 @@ int main()
         cout << "Enter number of flowers for " << name << ": ";
         cin >> numberOfPlants;
 
-        flowers[i].setName(name);
-        flowers[i].setNumberOfPlants(numberOfPlants);
+        flowers[i]->setName(name);
+        flowers[i]->setNumberOfPlants(numberOfPlants);
     }
 
     cout << "\nTrees:\n";
     for (int i = 0; i < numTrees; ++i)
     {
-        trees[i].display();
+        trees[i]->display();
     }
 
     cout << "\nFlowers:\n";
     for (int i = 0; i < numFlowers; ++i)
     {
-        flowers[i].display();
+        flowers[i]->display();
     }
 
+    cout << endl;
+    Tree::displayTotalTrees();
+    Flower::displayTotalFlowers();
+
+    for (int i = 0; i < numTrees; ++i)
+    {
+        delete trees[i];
+    }
     delete[] trees;
+
+    for (int i = 0; i < numFlowers; ++i)
+    {
+        delete flowers[i];
+    }
     delete[] flowers;
 
     return 0;

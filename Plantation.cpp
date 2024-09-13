@@ -11,12 +11,9 @@ public:
     Plant(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
         : name(name), numberOfPlants(numberOfPlants), plantingDate(plantingDate) {}
 
-    void display() const
-    {
-        cout << "Plant: " << this->getName() << ", Number of plants: " << this->getNumberOfPlants()
-             << ", Planted on: " << this->formatDate(this->getPlantingDate())
-             << ", Days since planting: " << this->daysSincePlanting() << endl;
-    }
+    virtual ~Plant() {}
+
+    virtual void display() const = 0;
 
     void setName(string newName)
     {
@@ -81,7 +78,7 @@ public:
         totalTrees++;
     }
 
-    void display() const
+    void display() const override
     {
         cout << "Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
              << ", Planted on: " << this->formatDate(this->getPlantingDate())
@@ -107,7 +104,7 @@ public:
         totalFlowers++;
     }
 
-    void display() const
+    void display() const override
     {
         cout << "Flower: " << this->getName() << ", Number of flowers: " << this->getNumberOfPlants()
              << ", Planted on: " << this->formatDate(this->getPlantingDate())
@@ -140,14 +137,13 @@ int main()
     cout << "Enter the number of flowers: ";
     cin >> numFlowers;
 
-    Tree **trees = new Tree *[numTrees];
-    Flower **flowers = new Flower *[numFlowers];
+    Plant **plants = new Plant *[numTrees + numFlowers];
 
     cin.ignore();
 
     for (int i = 0; i < numTrees; ++i)
     {
-        trees[i] = new Tree;
+        plants[i] = new Tree;
         string name;
         int numberOfPlants;
         string plantingDateStr;
@@ -162,19 +158,19 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        trees[i]->setName(name);
-        trees[i]->setNumberOfPlants(numberOfPlants);
-        trees[i]->setPlantingDate(plantingDate);
+        plants[i]->setName(name);
+        plants[i]->setNumberOfPlants(numberOfPlants);
+        plants[i]->setPlantingDate(plantingDate);
     }
 
-    for (int i = 0; i < numFlowers; ++i)
+    for (int i = numTrees; i < numTrees + numFlowers; ++i)
     {
-        flowers[i] = new Flower;
+        plants[i] = new Flower;
         string name;
         int numberOfPlants;
         string plantingDateStr;
 
-        cout << "Enter name for flower " << i + 1 << ": ";
+        cout << "Enter name for flower " << i - numTrees + 1 << ": ";
         getline(cin, name);
         cout << "Enter number of flowers for " << name << ": ";
         cin >> numberOfPlants;
@@ -184,38 +180,26 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        flowers[i]->setName(name);
-        flowers[i]->setNumberOfPlants(numberOfPlants);
-        flowers[i]->setPlantingDate(plantingDate);
+        plants[i]->setName(name);
+        plants[i]->setNumberOfPlants(numberOfPlants);
+        plants[i]->setPlantingDate(plantingDate);
     }
 
-    cout << "\nTrees:\n";
-    for (int i = 0; i < numTrees; ++i)
+    cout << "\nPlants:\n";
+    for (int i = 0; i < numTrees + numFlowers; ++i)
     {
-        trees[i]->display();
-    }
-
-    cout << "\nFlowers:\n";
-    for (int i = 0; i < numFlowers; ++i)
-    {
-        flowers[i]->display();
+        plants[i]->display();
     }
 
     cout << endl;
     Tree::displayTotalTrees();
     Flower::displayTotalFlowers();
 
-    for (int i = 0; i < numTrees; ++i)
+    for (int i = 0; i < numTrees + numFlowers; ++i)
     {
-        delete trees[i];
+        delete plants[i];
     }
-    delete[] trees;
-
-    for (int i = 0; i < numFlowers; ++i)
-    {
-        delete flowers[i];
-    }
-    delete[] flowers;
+    delete[] plants;
 
     return 0;
 }

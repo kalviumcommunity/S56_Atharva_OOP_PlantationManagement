@@ -8,6 +8,7 @@ using namespace std;
 class Plant
 {
 public:
+    // Default constructor
     Plant(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
         : name(name), numberOfPlants(numberOfPlants), plantingDate(plantingDate) {}
 
@@ -72,8 +73,16 @@ class Tree : public Plant
 public:
     static int totalTrees;
 
-    Tree(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
-        : Plant(name, numberOfPlants, plantingDate)
+    // Default constructor (calls the base class default constructor)
+    Tree()
+        : Plant() // Calls default constructor of Plant
+    {
+        totalTrees++;
+    }
+
+    // Parameterized constructor
+    Tree(string name, int numberOfPlants, time_t plantingDate)
+        : Plant(name, numberOfPlants, plantingDate) // Calls parameterized constructor of Plant
     {
         totalTrees++;
     }
@@ -98,8 +107,16 @@ class Flower : public Plant
 public:
     static int totalFlowers;
 
-    Flower(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
-        : Plant(name, numberOfPlants, plantingDate)
+    // Default constructor (calls the base class default constructor)
+    Flower()
+        : Plant() // Calls default constructor of Plant
+    {
+        totalFlowers++;
+    }
+
+    // Parameterized constructor
+    Flower(string name, int numberOfPlants, time_t plantingDate)
+        : Plant(name, numberOfPlants, plantingDate) // Calls parameterized constructor of Plant
     {
         totalFlowers++;
     }
@@ -137,13 +154,12 @@ int main()
     cout << "Enter the number of flowers: ";
     cin >> numFlowers;
 
-    Plant **plants = new Plant *[numTrees + numFlowers];
-
     cin.ignore();
+
+    Plant **plants = new Plant *[numTrees + numFlowers];
 
     for (int i = 0; i < numTrees; ++i)
     {
-        plants[i] = new Tree;
         string name;
         int numberOfPlants;
         string plantingDateStr;
@@ -158,14 +174,11 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        plants[i]->setName(name);
-        plants[i]->setNumberOfPlants(numberOfPlants);
-        plants[i]->setPlantingDate(plantingDate);
+        plants[i] = new Tree(name, numberOfPlants, plantingDate); // Using parameterized constructor
     }
 
     for (int i = numTrees; i < numTrees + numFlowers; ++i)
     {
-        plants[i] = new Flower;
         string name;
         int numberOfPlants;
         string plantingDateStr;
@@ -180,9 +193,7 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        plants[i]->setName(name);
-        plants[i]->setNumberOfPlants(numberOfPlants);
-        plants[i]->setPlantingDate(plantingDate);
+        plants[i] = new Flower(name, numberOfPlants, plantingDate); // Using parameterized constructor
     }
 
     cout << "\nPlants:\n";

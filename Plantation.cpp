@@ -8,7 +8,6 @@ using namespace std;
 class Plant
 {
 public:
-    // Default constructor
     Plant(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
         : name(name), numberOfPlants(numberOfPlants), plantingDate(plantingDate) {}
 
@@ -73,21 +72,18 @@ class Tree : public Plant
 public:
     static int totalTrees;
 
-    // Default constructor (calls the base class default constructor)
-    Tree()
-        : Plant() // Calls default constructor of Plant
+    Tree() : Plant()
     {
         totalTrees++;
     }
 
-    // Parameterized constructor
     Tree(string name, int numberOfPlants, time_t plantingDate)
-        : Plant(name, numberOfPlants, plantingDate) // Calls parameterized constructor of Plant
+        : Plant(name, numberOfPlants, plantingDate)
     {
         totalTrees++;
     }
 
-    void display() const override
+    virtual void display() const override
     {
         cout << "Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
              << ", Planted on: " << this->formatDate(this->getPlantingDate())
@@ -102,21 +98,34 @@ public:
 
 int Tree::totalTrees = 0;
 
+class FruitTree : public Tree
+{
+public:
+    FruitTree() : Tree() {}
+
+    FruitTree(string name, int numberOfPlants, time_t plantingDate)
+        : Tree(name, numberOfPlants, plantingDate) {}
+
+    void display() const override
+    {
+        cout << "Fruit Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
+             << ", Planted on: " << this->formatDate(this->getPlantingDate())
+             << ", Days since planting: " << this->daysSincePlanting() << endl;
+    }
+};
+
 class Flower : public Plant
 {
 public:
     static int totalFlowers;
 
-    // Default constructor (calls the base class default constructor)
-    Flower()
-        : Plant() // Calls default constructor of Plant
+    Flower() : Plant()
     {
         totalFlowers++;
     }
 
-    // Parameterized constructor
     Flower(string name, int numberOfPlants, time_t plantingDate)
-        : Plant(name, numberOfPlants, plantingDate) // Calls parameterized constructor of Plant
+        : Plant(name, numberOfPlants, plantingDate)
     {
         totalFlowers++;
     }
@@ -163,6 +172,7 @@ int main()
         string name;
         int numberOfPlants;
         string plantingDateStr;
+        char isFruitTree;
 
         cout << "Enter name for tree " << i + 1 << ": ";
         getline(cin, name);
@@ -174,7 +184,18 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        plants[i] = new Tree(name, numberOfPlants, plantingDate); // Using parameterized constructor
+        cout << "Is " << name << " a fruit tree (y/n)? ";
+        cin >> isFruitTree;
+        cin.ignore();
+
+        if (isFruitTree == 'y' || isFruitTree == 'Y')
+        {
+            plants[i] = new FruitTree(name, numberOfPlants, plantingDate);
+        }
+        else
+        {
+            plants[i] = new Tree(name, numberOfPlants, plantingDate);
+        }
     }
 
     for (int i = numTrees; i < numTrees + numFlowers; ++i)
@@ -193,7 +214,7 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        plants[i] = new Flower(name, numberOfPlants, plantingDate); // Using parameterized constructor
+        plants[i] = new Flower(name, numberOfPlants, plantingDate);
     }
 
     cout << "\nPlants:\n";

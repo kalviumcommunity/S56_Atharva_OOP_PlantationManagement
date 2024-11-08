@@ -13,7 +13,7 @@ public:
 
     virtual ~Plant() {}
 
-    virtual void display() const = 0;
+    virtual void display() const = 0; // Pure virtual function- here we force derived classes to implement this method (polymorphism)
 
     void setName(string newName)
     {
@@ -83,7 +83,7 @@ public:
         totalTrees++;
     }
 
-    virtual void display() const override
+    virtual void display() const override // Polymorphism-here we are overriding the base class's pure virtual function
     {
         cout << "Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
              << ", Planted on: " << this->formatDate(this->getPlantingDate())
@@ -106,7 +106,7 @@ public:
     FruitTree(string name, int numberOfPlants, time_t plantingDate)
         : Tree(name, numberOfPlants, plantingDate) {}
 
-    void display() const override
+    void display() const override // Polymorphism here we are further overriding the display function for fruit trees
     {
         cout << "Fruit Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
              << ", Planted on: " << this->formatDate(this->getPlantingDate())
@@ -130,7 +130,7 @@ public:
         totalFlowers++;
     }
 
-    void display() const override
+    void display() const override // Polymorphismh- here we are overriding the base class's display method for flowers
     {
         cout << "Flower: " << this->getName() << ", Number of flowers: " << this->getNumberOfPlants()
              << ", Planted on: " << this->formatDate(this->getPlantingDate())
@@ -190,7 +190,7 @@ int main()
 
         if (isFruitTree == 'y' || isFruitTree == 'Y')
         {
-            plants[i] = new FruitTree(name, numberOfPlants, plantingDate);
+            plants[i] = new FruitTree(name, numberOfPlants, plantingDate); // Polymorphism-here we are creating a derived class object but storing in base class pointer
         }
         else
         {
@@ -214,13 +214,13 @@ int main()
         getline(cin, plantingDateStr);
         time_t plantingDate = parseDate(plantingDateStr);
 
-        plants[i] = new Flower(name, numberOfPlants, plantingDate);
+        plants[i] = new Flower(name, numberOfPlants, plantingDate); // Polymorphism-heere we are creating a derived class object but storing in base class pointer
     }
 
     cout << "\nPlants:\n";
     for (int i = 0; i < numTrees + numFlowers; ++i)
     {
-        plants[i]->display();
+        plants[i]->display(); // Polymorphism- here we are invoking display function based on the actual object type
     }
 
     cout << endl;

@@ -5,7 +5,7 @@
 #include <iomanip>
 using namespace std;
 
-class Plant
+class Plant // Abstract class
 {
 public:
     Plant(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))

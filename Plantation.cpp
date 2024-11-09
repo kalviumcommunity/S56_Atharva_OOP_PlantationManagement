@@ -3,50 +3,13 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <vector>
 using namespace std;
 
-class Plant // Abstract class
+class DateUtility
 {
 public:
-    Plant(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
-        : name(name), numberOfPlants(numberOfPlants), plantingDate(plantingDate) {}
-
-    virtual ~Plant() {}
-
-    virtual void display() const = 0; // Pure virtual function- here we force derived classes to implement this method (polymorphism)
-
-    void setName(string newName)
-    {
-        this->name = newName;
-    }
-
-    void setNumberOfPlants(int numPlants)
-    {
-        this->numberOfPlants = numPlants;
-    }
-
-    void setPlantingDate(time_t newDate)
-    {
-        this->plantingDate = newDate;
-    }
-
-protected:
-    string getName() const
-    {
-        return this->name;
-    }
-
-    int getNumberOfPlants() const
-    {
-        return this->numberOfPlants;
-    }
-
-    time_t getPlantingDate() const
-    {
-        return this->plantingDate;
-    }
-
-    string formatDate(time_t time) const
+    static string formatDate(time_t time)
     {
         tm *tm = localtime(&time);
         char buffer[11];
@@ -54,12 +17,60 @@ protected:
         return buffer;
     }
 
-    int daysSincePlanting() const
+    static int daysSince(time_t date)
     {
         time_t now = time(nullptr);
-        double diff = difftime(now, plantingDate) / (60 * 60 * 24);
+        double diff = difftime(now, date) / (60 * 60 * 24);
         return static_cast<int>(diff);
     }
+
+    static time_t parseDate(const string &dateStr)
+    {
+        tm tm = {};
+        istringstream ss(dateStr);
+        ss >> get_time(&tm, "%d/%m/%Y");
+        return mktime(&tm);
+    }
+};
+
+class PlantCounter
+{
+public:
+    static int totalTrees;
+    static int totalFlowers;
+
+    static void addTrees(int count) { totalTrees += count; }
+    static void addFlowers(int count) { totalFlowers += count; }
+
+    static void displayTotalCounts()
+    {
+        cout << "Total number of trees: " << totalTrees << endl;
+        cout << "Total number of flowers: " << totalFlowers << endl;
+    }
+};
+
+int PlantCounter::totalTrees = 0;
+int PlantCounter::totalFlowers = 0;
+
+class Plant
+{
+public:
+    Plant(string name = "", int numberOfPlants = 0, time_t plantingDate = time(nullptr))
+        : name(name), numberOfPlants(numberOfPlants), plantingDate(plantingDate) {}
+
+    virtual ~Plant() {}
+
+    virtual void display() const = 0;
+
+    void setName(string newName) { this->name = newName; }
+    void setNumberOfPlants(int numPlants) { this->numberOfPlants = numPlants; }
+    void setPlantingDate(time_t newDate) { this->plantingDate = newDate; }
+
+    string getName() const { return this->name; }
+    int getNumberOfPlants() const { return this->numberOfPlants; }
+
+protected:
+    time_t getPlantingDate() const { return this->plantingDate; }
 
 private:
     string name;
@@ -70,168 +81,160 @@ private:
 class Tree : public Plant
 {
 public:
-    static int totalTrees;
-
-    Tree() : Plant()
-    {
-        totalTrees++;
-    }
-
     Tree(string name, int numberOfPlants, time_t plantingDate)
         : Plant(name, numberOfPlants, plantingDate)
     {
-        totalTrees++;
+        PlantCounter::addTrees(numberOfPlants);
     }
 
-    virtual void display() const override // Polymorphism-here we are overriding the base class's pure virtual function
+    void display() const override
     {
-        cout << "Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
-             << ", Planted on: " << this->formatDate(this->getPlantingDate())
-             << ", Days since planting: " << this->daysSincePlanting() << endl;
-    }
-
-    static void displayTotalTrees()
-    {
-        cout << "Total number of trees: " << totalTrees << endl;
+        cout << "Tree: " << getName() << ", Number of trees: " << getNumberOfPlants()
+             << ", Planted on: " << DateUtility::formatDate(getPlantingDate())
+             << ", Days since planting: " << DateUtility::daysSince(getPlantingDate()) << endl;
     }
 };
-
-int Tree::totalTrees = 0;
 
 class FruitTree : public Tree
 {
 public:
-    FruitTree() : Tree() {}
-
     FruitTree(string name, int numberOfPlants, time_t plantingDate)
         : Tree(name, numberOfPlants, plantingDate) {}
 
-    void display() const override // Polymorphism here we are further overriding the display function for fruit trees
+    void display() const override
     {
-        cout << "Fruit Tree: " << this->getName() << ", Number of trees: " << this->getNumberOfPlants()
-             << ", Planted on: " << this->formatDate(this->getPlantingDate())
-             << ", Days since planting: " << this->daysSincePlanting() << endl;
+        cout << "Fruit Tree: " << getName() << ", Number of trees: " << getNumberOfPlants()
+             << ", Planted on: " << DateUtility::formatDate(getPlantingDate())
+             << ", Days since planting: " << DateUtility::daysSince(getPlantingDate()) << endl;
     }
 };
 
 class Flower : public Plant
 {
 public:
-    static int totalFlowers;
-
-    Flower() : Plant()
-    {
-        totalFlowers++;
-    }
-
     Flower(string name, int numberOfPlants, time_t plantingDate)
         : Plant(name, numberOfPlants, plantingDate)
     {
-        totalFlowers++;
+        PlantCounter::addFlowers(numberOfPlants);
     }
 
-    void display() const override // Polymorphismh- here we are overriding the base class's display method for flowers
+    void display() const override
     {
-        cout << "Flower: " << this->getName() << ", Number of flowers: " << this->getNumberOfPlants()
-             << ", Planted on: " << this->formatDate(this->getPlantingDate())
-             << ", Days since planting: " << this->daysSincePlanting() << endl;
-    }
-
-    static void displayTotalFlowers()
-    {
-        cout << "Total number of flowers: " << totalFlowers << endl;
+        cout << "Flower: " << getName() << ", Number of flowers: " << getNumberOfPlants()
+             << ", Planted on: " << DateUtility::formatDate(getPlantingDate())
+             << ", Days since planting: " << DateUtility::daysSince(getPlantingDate()) << endl;
     }
 };
 
-int Flower::totalFlowers = 0;
-
-time_t parseDate(const string &dateStr)
+void addPlant(vector<Plant *> &plants)
 {
-    tm tm = {};
-    istringstream ss(dateStr);
-    ss >> get_time(&tm, "%d/%m/%Y");
-    return mktime(&tm);
-}
+    string name, plantingDateStr;
+    int numberOfPlants;
+    char type, isFruitTree;
 
-int main()
-{
-    int numTrees, numFlowers;
-
-    cout << "Enter the number of trees: ";
-    cin >> numTrees;
-
-    cout << "Enter the number of flowers: ";
-    cin >> numFlowers;
-
+    cout << "Enter type of plant (t for Tree, f for Flower): ";
+    cin >> type;
     cin.ignore();
 
-    Plant **plants = new Plant *[numTrees + numFlowers];
+    cout << "Enter name: ";
+    getline(cin, name);
+    cout << "Enter number of plants: ";
+    cin >> numberOfPlants;
+    cin.ignore();
 
-    for (int i = 0; i < numTrees; ++i)
+    cout << "Enter planting date (DD/MM/YYYY): ";
+    getline(cin, plantingDateStr);
+    time_t plantingDate = DateUtility::parseDate(plantingDateStr);
+
+    if (type == 't' || type == 'T')
     {
-        string name;
-        int numberOfPlants;
-        string plantingDateStr;
-        char isFruitTree;
-
-        cout << "Enter name for tree " << i + 1 << ": ";
-        getline(cin, name);
-        cout << "Enter number of trees for " << name << ": ";
-        cin >> numberOfPlants;
-        cin.ignore();
-
-        cout << "Enter planting date (DD/MM/YYYY) for " << name << ": ";
-        getline(cin, plantingDateStr);
-        time_t plantingDate = parseDate(plantingDateStr);
-
-        cout << "Is " << name << " a fruit tree (y/n)? ";
+        cout << "Is it a fruit tree (y/n)? ";
         cin >> isFruitTree;
         cin.ignore();
 
         if (isFruitTree == 'y' || isFruitTree == 'Y')
-        {
-            plants[i] = new FruitTree(name, numberOfPlants, plantingDate); // Polymorphism-here we are creating a derived class object but storing in base class pointer
-        }
+            plants.push_back(new FruitTree(name, numberOfPlants, plantingDate));
         else
-        {
-            plants[i] = new Tree(name, numberOfPlants, plantingDate);
-        }
+            plants.push_back(new Tree(name, numberOfPlants, plantingDate));
     }
-
-    for (int i = numTrees; i < numTrees + numFlowers; ++i)
+    else if (type == 'f' || type == 'F')
     {
-        string name;
-        int numberOfPlants;
-        string plantingDateStr;
+        plants.push_back(new Flower(name, numberOfPlants, plantingDate));
+    }
+}
 
-        cout << "Enter name for flower " << i - numTrees + 1 << ": ";
-        getline(cin, name);
-        cout << "Enter number of flowers for " << name << ": ";
-        cin >> numberOfPlants;
+void displayAllPlants(const vector<Plant *> &plants)
+{
+    for (const auto &plant : plants)
+    {
+        plant->display();
+    }
+}
+
+void displayTotalPlants()
+{
+    PlantCounter::displayTotalCounts();
+}
+
+Plant *findPlantByName(const vector<Plant *> &plants, const string &name)
+{
+    for (const auto &plant : plants)
+    {
+        if (plant->getName() == name)
+            return plant;
+    }
+    return nullptr;
+}
+
+int main()
+{
+    vector<Plant *> plants;
+    int choice;
+
+    while (true)
+    {
+        cout << "\nPlantation Management System" << endl;
+        cout << "1. Add a new plant" << endl;
+        cout << "2. Display all plants" << endl;
+        cout << "3. Count total plants" << endl;
+        cout << "4. Search plant by name" << endl;
+        cout << "5. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
         cin.ignore();
 
-        cout << "Enter planting date (DD/MM/YYYY) for " << name << ": ";
-        getline(cin, plantingDateStr);
-        time_t plantingDate = parseDate(plantingDateStr);
-
-        plants[i] = new Flower(name, numberOfPlants, plantingDate); // Polymorphism-heere we are creating a derived class object but storing in base class pointer
+        switch (choice)
+        {
+        case 1:
+            addPlant(plants);
+            break;
+        case 2:
+            displayAllPlants(plants);
+            break;
+        case 3:
+            displayTotalPlants();
+            break;
+        case 4:
+        {
+            string name;
+            cout << "Enter the name of the plant to search: ";
+            getline(cin, name);
+            Plant *plant = findPlantByName(plants, name);
+            if (plant)
+                plant->display();
+            else
+                cout << "Plant not found." << endl;
+            break;
+        }
+        case 5:
+            for (auto plant : plants)
+                delete plant;
+            plants.clear();
+            cout << "Exiting the system. Goodbye!" << endl;
+            return 0;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
     }
-
-    cout << "\nPlants:\n";
-    for (int i = 0; i < numTrees + numFlowers; ++i)
-    {
-        plants[i]->display(); // Polymorphism- here we are invoking display function based on the actual object type
-    }
-
-    cout << endl;
-    Tree::displayTotalTrees();
-    Flower::displayTotalFlowers();
-
-    for (int i = 0; i < numTrees + numFlowers; ++i)
-    {
-        delete plants[i];
-    }
-    delete[] plants;
-
-    return 0;
 }

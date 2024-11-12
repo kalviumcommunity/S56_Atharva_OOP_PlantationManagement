@@ -126,11 +126,43 @@ public:
     }
 };
 
+// Factory class to create plants
+class PlantFactory
+{
+public:
+    static Plant *createPlant(char type, const string &name, int numberOfPlants, const string &plantingDateStr)
+    {
+        time_t plantingDate = DateUtility::parseDate(plantingDateStr);
+
+        if (type == 't' || type == 'T')
+        {
+            char isFruitTree;
+            cout << "Is it a fruit tree (y/n)? ";
+            cin >> isFruitTree;
+            cin.ignore();
+
+            if (isFruitTree == 'y' || isFruitTree == 'Y')
+                return new FruitTree(name, numberOfPlants, plantingDate);
+            else
+                return new Tree(name, numberOfPlants, plantingDate);
+        }
+        else if (type == 'f' || type == 'F')
+        {
+            return new Flower(name, numberOfPlants, plantingDate);
+        }
+        else
+        {
+            cout << "Invalid plant type." << endl;
+            return nullptr;
+        }
+    }
+};
+
 void addPlant(vector<Plant *> &plants)
 {
     string name, plantingDateStr;
     int numberOfPlants;
-    char type, isFruitTree;
+    char type;
 
     cout << "Enter type of plant (t for Tree, f for Flower): ";
     cin >> type;
@@ -144,22 +176,11 @@ void addPlant(vector<Plant *> &plants)
 
     cout << "Enter planting date (DD/MM/YYYY): ";
     getline(cin, plantingDateStr);
-    time_t plantingDate = DateUtility::parseDate(plantingDateStr);
 
-    if (type == 't' || type == 'T')
+    Plant *newPlant = PlantFactory::createPlant(type, name, numberOfPlants, plantingDateStr);
+    if (newPlant != nullptr)
     {
-        cout << "Is it a fruit tree (y/n)? ";
-        cin >> isFruitTree;
-        cin.ignore();
-
-        if (isFruitTree == 'y' || isFruitTree == 'Y')
-            plants.push_back(new FruitTree(name, numberOfPlants, plantingDate));
-        else
-            plants.push_back(new Tree(name, numberOfPlants, plantingDate));
-    }
-    else if (type == 'f' || type == 'F')
-    {
-        plants.push_back(new Flower(name, numberOfPlants, plantingDate));
+        plants.push_back(newPlant);
     }
 }
 

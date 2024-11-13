@@ -126,35 +126,47 @@ public:
     }
 };
 
-// Factory class to create plants
+class PlantCreator
+{
+public:
+    virtual Plant *createPlant(const string &name, int numberOfPlants, time_t plantingDate) const = 0;
+    virtual ~PlantCreator() = default;
+};
+
+class TreeCreator : public PlantCreator
+{
+public:
+    Plant *createPlant(const string &name, int numberOfPlants, time_t plantingDate) const override
+    {
+        return new Tree(name, numberOfPlants, plantingDate);
+    }
+};
+
+class FruitTreeCreator : public PlantCreator
+{
+public:
+    Plant *createPlant(const string &name, int numberOfPlants, time_t plantingDate) const override
+    {
+        return new FruitTree(name, numberOfPlants, plantingDate);
+    }
+};
+
+class FlowerCreator : public PlantCreator
+{
+public:
+    Plant *createPlant(const string &name, int numberOfPlants, time_t plantingDate) const override
+    {
+        return new Flower(name, numberOfPlants, plantingDate);
+    }
+};
+
 class PlantFactory
 {
 public:
-    static Plant *createPlant(char type, const string &name, int numberOfPlants, const string &plantingDateStr)
+    static Plant *createPlant(PlantCreator *creator, const string &name, int numberOfPlants, const string &plantingDateStr)
     {
         time_t plantingDate = DateUtility::parseDate(plantingDateStr);
-
-        if (type == 't' || type == 'T')
-        {
-            char isFruitTree;
-            cout << "Is it a fruit tree (y/n)? ";
-            cin >> isFruitTree;
-            cin.ignore();
-
-            if (isFruitTree == 'y' || isFruitTree == 'Y')
-                return new FruitTree(name, numberOfPlants, plantingDate);
-            else
-                return new Tree(name, numberOfPlants, plantingDate);
-        }
-        else if (type == 'f' || type == 'F')
-        {
-            return new Flower(name, numberOfPlants, plantingDate);
-        }
-        else
-        {
-            cout << "Invalid plant type." << endl;
-            return nullptr;
-        }
+        return creator->createPlant(name, numberOfPlants, plantingDate);
     }
 };
 
@@ -177,7 +189,35 @@ void addPlant(vector<Plant *> &plants)
     cout << "Enter planting date (DD/MM/YYYY): ";
     getline(cin, plantingDateStr);
 
-    Plant *newPlant = PlantFactory::createPlant(type, name, numberOfPlants, plantingDateStr);
+    PlantCreator *creator = nullptr;
+    if (type == 't' || type == 'T')
+    {
+        char isFruitTree;
+        cout << "Is it a fruit tree (y/n)? ";
+        cin >> isFruitTree;
+        cin.ignore();
+
+        if (isFruitTree == 'y' || isFruitTree == 'Y')
+        {
+            creator = new FruitTreeCreator();
+        }
+        else
+        {
+            creator = new TreeCreator();
+        }
+    }
+    else if (type == 'f' || type == 'F')
+    {
+        creator = new FlowerCreator();
+    }
+    else
+    {
+        cout << "Invalid plant type." << endl;
+        return;
+    }
+
+    Plant *newPlant = PlantFactory::createPlant(creator, name, numberOfPlants, plantingDateStr);
+    delete creator;
     if (newPlant != nullptr)
     {
         plants.push_back(newPlant);
@@ -222,7 +262,6 @@ int main()
         cout << "5. Exit" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
-
         cin.ignore();
 
         switch (choice)
